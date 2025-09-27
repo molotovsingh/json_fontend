@@ -19,6 +19,13 @@ Makes your (Greenplum/Postgres) JSON columns readable from a friendly Streamlit 
    ```
 4. Use the sidebar to upload your Excel/CSV file or enter your Greenplum/Postgres credentials and table name, then choose the columns that should be parsed as JSON.
 
+## Testing
+
+- Install the dev dependencies: `pip install -r requirements-dev.txt`
+- Run the suite: `pytest`
+
+The tests exercise the JSON detection/flattening helpers with dummy DataFrames and stubbed database connections, so they run quickly without needing a real Greenplum instance.
+
 ## Database mode
 
 - Fill in host, port, database, user, password, and the table name (e.g. `public.my_table`).
