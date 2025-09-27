@@ -78,7 +78,12 @@ def parse_table_identifier(table_name: str) -> List[str]:
     """Split schema-qualified table names into identifier parts."""
     if not table_name:
         raise ValueError("Table name is required")
-    parts = [part.strip().strip('"') for part in table_name.split(".") if part.strip()]
+
+    cleaned = table_name.strip()
+    if not cleaned or cleaned[0] == "." or cleaned[-1] == "." or ".." in cleaned:
+        raise ValueError("Table name is invalid")
+
+    parts = [part.strip().strip('"') for part in cleaned.split(".") if part.strip()]
     if not parts:
         raise ValueError("Table name is empty")
     return parts
@@ -101,7 +106,13 @@ def fetch_table_dataframe(conn_params: Dict[str, Any], table_name: str, limit: O
             rows = cursor.fetchall()
             description = cursor.description or []
 
-    columns = [getattr(col, "name", col[0]) for col in description]
+    columns: List[str] = []
+    for col in description:
+        name = getattr(col, "name", None)
+        if name is not None:
+            columns.append(name)
+        else:
+            columns.append(col[0])
     return pd.DataFrame(rows, columns=columns)
 
 
@@ -111,7 +122,8 @@ def load_uploaded_dataframe(uploaded_file: Any, sheet_name: Optional[str]) -> pd
     buffer = io.BytesIO(uploaded_file.getvalue())
 
     if suffix in {"xlsx", "xls", "xlsm"}:
-        return pd.read_excel(buffer, sheet_name=sheet_name)
+        sheet = 0 if sheet_name is None else sheet_name
+        return pd.read_excel(buffer, sheet_name=sheet)
     if suffix == "csv":
         buffer.seek(0)
         return pd.read_csv(buffer)
