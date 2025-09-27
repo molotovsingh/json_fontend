@@ -19,12 +19,29 @@ Makes your (Greenplum/Postgres) JSON columns readable from a friendly Streamlit 
    ```
 4. Use the sidebar to upload your Excel/CSV file or enter your Greenplum/Postgres credentials and table name, then choose the columns that should be parsed as JSON.
 
+### Using uv instead of pip
+
+```bash
+uv venv .venv
+UV_CACHE_DIR=.uv-cache uv pip install -r requirements.txt
+source .venv/bin/activate
+streamlit run streamlit_app.py
+```
+
 ## Testing
 
 - Install the dev dependencies: `pip install -r requirements-dev.txt`
 - Run the suite: `pytest`
 
 The tests exercise the JSON detection/flattening helpers with dummy DataFrames and stubbed database connections, so they run quickly without needing a real Greenplum instance.
+
+Using `uv`:
+
+```bash
+uv venv .venv
+UV_CACHE_DIR=.uv-cache uv pip install -r requirements-dev.txt
+.venv/bin/python -m pytest
+```
 
 ## Database mode
 
